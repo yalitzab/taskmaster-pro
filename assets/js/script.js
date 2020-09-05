@@ -47,16 +47,52 @@ var saveTasks = function() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 };
 
+// enable draggable/sortable feature on list-group elements
+$(".card .list-group").sortable({
+  connectWith: $(".card .list-group"),
+  scroll: false,
+  tolerance: "pointer",
+  helper: "clone",
+  activate: function(event) {
+    console.log("activate", this);
+  },
+  deactivate: function(event) {
+    console.log("deactivate", this);
+  },
+  over: function(event) {
+    console.log("over", event.target);
+  },
+  out: function(event) {
+    console.log("out", event.target);
+  },
+  update: function(event) {
+    // array to store the task data in
+    var tempArr = [];
+    
+    // loop over current set of children in sortable list
+    $(this).children().each(function() {
+      var arrName = $(this)
+      .attr("id")
+      .replace("list-", "");
+  
+    // add task data to the temp array as an object
+    tasks[arrName] = tempArr;
+    saveTasks();
+    });
+  }
+});
+
 $(".list-group").on("click", "p", function() {
   var text = $(this)
     .text()
     .trim();
 
-  var textInput = $("<textarea>")
+  // replace p element with a new textarea
+  var textInput = $("<textarea>").addClass("form-control").val(text);
   $(this).replaceWith(textInput);
+
+  // auto focus new element
   textInput.trigger("focus");
-  .addClass("form-control")
-  .val(text);
 });
 
 $(".list-group").on("blur", "textarea", function() {
